@@ -1,0 +1,9 @@
+packages: ./yu.cabal
+
+source-repository-package
+  type: git
+  location: git://github.com/1Computer1/hectoparsec.git
+
+source-repository-package
+  type: git
+  location: git://github.com/1Computer1/errata.git

@@ -1,0 +1,18 @@
+module main;
+
+/*
+ * Add two integers, double result and return it.
+ */
+fun addTwice(x: int, y: int): int {
+    return (x + y) * 2;
+}
+
+/*
+ * Entry point of the program.
+ */
+fun main() {
+    let x: int = 5;
+    let y = 10;
+    let z = addTwice(x, y);
+    print(z); // -> 30
+}
