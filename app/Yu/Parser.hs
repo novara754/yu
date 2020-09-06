@@ -13,6 +13,7 @@ import           Hectoparsec hiding (token, tokens)
 
 import           Yu.Lexer hiding (Parser)
 import           Yu.Error
+import           Yu.Located
 
 --------------------------
 -- Abstract Syntax Tree --

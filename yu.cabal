@@ -23,6 +23,7 @@ common common-options
                      , parser-combinators
                      , hectoparsec
                      , errata
+                     , pretty-simple
 
   ghc-options:         -Wall
                        -Wcompat
@@ -46,6 +47,7 @@ executable yu
   other-modules:       Yu.Lexer
                        Yu.Parser
                        Yu.Error
+                       Yu.Located
   ghc-options:         -threaded
                        -rtsopts
                        -with-rtsopts=-N

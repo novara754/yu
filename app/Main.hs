@@ -6,6 +6,7 @@ import           System.Environment
 import           Hectoparsec
 import           Hectoparsec.Text
 import           Errata
+import           Text.Pretty.Simple
 
 import           Yu.Lexer
 import           Yu.Parser
@@ -18,7 +19,7 @@ parseAndPrint fp = do
   case evalPartext pLexer fp src of
     Left _   -> error "testParse: lexer cannot error"
     Right ts -> case evalParsec pModule () ts of
-      Right x -> print x
+      Right x -> pPrint x
       Left es -> TL.putStrLn $ prettyErrorsNE src (parseErrorErrata <$> es)
 
 main :: IO ()
