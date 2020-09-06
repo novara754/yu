@@ -5,6 +5,7 @@ module Yu.Lexer
  , Parser
  , pLexer
  , isIdent
+ , isOpIdent
  , isInt
  ) where
 
@@ -68,6 +69,10 @@ data Tok
 isIdent :: Tok -> Bool
 isIdent (Ident _) = True
 isIdent _         = False
+-- | Check whether a token is an operator.
+isOpIdent :: Tok -> Bool
+isOpIdent (OpIdent _) = True
+isOpIdent _           = False
 
 -- | Check whether a token is an integer.
 isInt :: Tok -> Bool

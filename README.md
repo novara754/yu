@@ -7,7 +7,8 @@ An imperative toy programming language.
 **Requirements:** [GHC and Cabal](https://www.haskell.org/ghcup/#).
 
 The project can be compiled using `cabal build`. It can also be ran using `cabal run`.
-Currently the program can only lex source code from a file and display the token stream:
+Currently the program will lex & parse the source code, report potential errors and if no errors
+were found it will print the AST.
 ```
 $ cabal run yu -- ./examples/simple.yu
 ```
