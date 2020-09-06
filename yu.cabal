@@ -8,7 +8,7 @@ license-file:        LICENSE
 author:              vzwGrey
 maintainer:          vzwGrey <vzwgrey@gmail.com>
 copyright:           2020 vzwGrey
-category:            Compilers/Interpreter
+category:            Compilers/Interpreters
 build-type:          Simple
 extra-doc-files:     README.md
                      CHANGELOG.md
