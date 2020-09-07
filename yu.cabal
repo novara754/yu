@@ -1,8 +1,8 @@
 cabal-version:       2.4
 name:                yu
 version:             0.0.0.0
-synopsis:            See README for more info
-description:         See README for more info
+synopsis:            Custom language & implementation.
+description:         Implementation of a custom programming language.
 license:             MIT
 license-file:        LICENSE
 author:              vzwGrey
@@ -13,11 +13,15 @@ build-type:          Simple
 extra-doc-files:     README.md
 tested-with:         GHC == 8.8.3
 
+source-repository head
+  type:     git
+  location: https://github.com/vzwGrey/yu.git
+
 common common-options
   default-extensions:  OverloadedStrings
                        LambdaCase
 
-  build-depends:       base >= 4.13.0.0
+  build-depends:       base >= 4.13.0.0 && < 5.0
                      , text >= 1.2.4.0
 
   ghc-options:         -Wall
