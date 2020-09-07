@@ -17,8 +17,8 @@ common common-options
   default-extensions:  OverloadedStrings
                        LambdaCase
 
-  build-depends:       base ^>= 4.13.0.0
-                     , text ^>= 1.2.4.0
+  build-depends:       base >= 4.13.0.0
+                     , text >= 1.2.4.0
 
   ghc-options:         -Wall
                        -Wcompat
@@ -52,10 +52,10 @@ library
                        Yu.Syntax.Lexer
                        Yu.Syntax.Parser
                        Yu.Syntax.Located
-  build-depends:       parser-combinators ^>= 1.2.1
-                     , hectoparsec ^>= 0.1.0.0
-                     , errata ^>= 0.1.0.0
-                     , pretty-simple ^>= 3.3.0.0
+  build-depends:       parser-combinators >= 1.2.1
+                     , hectoparsec >= 0.1.0.0
+                     , errata >= 0.1.0.0
+                     , pretty-simple >= 3.3.0.0
 
 test-suite yu-test
   import:              common-options
@@ -65,10 +65,10 @@ test-suite yu-test
   other-modules:       Yu.Syntax.LexerSpec
                        Yu.Syntax.ParserSpec
   build-depends:       yu
-                     , hectoparsec ^>= 0.1.0.0
-                     , hspec ^>= 2.7.4
-                     , QuickCheck ^>= 2.14.1
-                     , quickcheck-text ^>= 0.1.2.1
+                     , hectoparsec >= 0.1.0.0
+                     , hspec >= 2.7.4
+                     , QuickCheck >= 2.14.1
+                     , quickcheck-text >= 0.1.2.1
   build-tool-depends:  hspec-discover:hspec-discover
   ghc-options:         -threaded
                        -rtsopts
