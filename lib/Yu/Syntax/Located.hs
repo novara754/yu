@@ -1,3 +1,10 @@
+{-|
+Module      : Yu.Syntax.Location
+Description : Location data.
+
+This module contains types and functions to work with location data
+of Yu language items: spans of tokens, their lines and columns, etc..
+-}
 module Yu.Syntax.Located
  ( Located(..)
  , Span(..)

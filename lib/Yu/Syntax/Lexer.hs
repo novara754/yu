@@ -1,3 +1,10 @@
+{-|
+Module      : Yu.Syntax.Lexer
+Description : Lexer for the Yu language.
+
+This module contains types and parsers required to lex Yu source code.
+-}
+
 module Yu.Syntax.Lexer
  ( Located(..)
  , Span(..)

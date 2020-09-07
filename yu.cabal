@@ -11,7 +11,6 @@ copyright:           2020 vzwGrey
 category:            Compilers/Interpreters
 build-type:          Simple
 extra-doc-files:     README.md
-                     CHANGELOG.md
 tested-with:         GHC == 8.8.3
 
 common common-options
@@ -57,6 +56,3 @@ library
                      , hectoparsec
                      , errata
                      , pretty-simple
-  ghc-options:         -threaded
-                       -rtsopts
-                       -with-rtsopts=-N

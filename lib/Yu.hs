@@ -1,3 +1,9 @@
+{-|
+Module      : Yu.Error
+Description : Main module.
+
+This module contains utility functions for parsing Yu code.
+-}
 module Yu
   ( parse
   , printAST
@@ -24,8 +30,10 @@ parse fp src = do
     Left _   -> error "testParse: lexer cannot error"
     Right ts -> evalParsec pModule () ts
 
+-- | Pretty print an AST.
 printAST :: Module -> IO ()
 printAST = pPrint
 
+-- | Pretty print errors that occured during parsing.
 printErrors :: T.Text -> ParseErrors [Located Tok] () CustomError CustomLabel -> IO ()
 printErrors src es = TL.putStrLn $ prettyErrorsNE src (parseErrorErrata <$> es)

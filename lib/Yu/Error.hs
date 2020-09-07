@@ -1,3 +1,10 @@
+{-|
+Module      : Yu.Error
+Description : Error & label types and pretty printing.
+
+This module contains types for Yu language errors and labels for language items.
+Also contains functions to parse these errors for use with Errata.
+-}
 module Yu.Error
  ( CustomLabel(..)
  , CustomError(..)
@@ -29,6 +36,7 @@ data CustomError
   = CustomError
   deriving (Show, Eq, Ord)
 
+-- | Turn parser errors into Errata errors.
 parseErrorErrata :: ParseError [Located Tok] () CustomError CustomLabel -> Errata
 parseErrorErrata (ParseError _ _ ei) =
     -- Because our parser has no custom state i.e. we chose not to keep track of source positions, not all errors can
