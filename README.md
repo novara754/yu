@@ -48,7 +48,8 @@ module        ::= (decl)*
 decl          ::= module_decl
                 | function_decl
 module_decl   ::= "module" IDENT ";"
-function_decl ::= "fun" IDENT "(" ")" "{" (statement ";")* "}"
+function_decl ::= "fun" IDENT "(" param ("," param)* ")" "{" (statement ";")* "}"
+param         ::= IDENT ":" IDENT
 
 statement     ::= var_decl
                 | return
