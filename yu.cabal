@@ -63,6 +63,7 @@ test-suite yu-test
   type:                exitcode-stdio-1.0
   main-is:             Spec.hs
   other-modules:       Yu.Syntax.LexerSpec
+                       Yu.Syntax.ParserSpec
   build-depends:       yu
                      , hectoparsec
                      , hspec
