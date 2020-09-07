@@ -43,7 +43,6 @@ data Tok
   | Semicolon
   | Comma
   | Eq
-  | Arrow
   | Eof
   | Unknown Char -- Lexer does not report errors, simply passes them along to parser.
   deriving (Show, Eq, Ord)
