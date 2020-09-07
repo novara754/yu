@@ -1,4 +1,4 @@
-module Yu.Parser
+module Yu.Syntax.Parser
  ( Param(..)
  , Module(..)
  , Decl(..)
@@ -11,9 +11,8 @@ module Yu.Parser
 import qualified Data.Text as T
 import           Hectoparsec hiding (token, tokens)
 
-import           Yu.Lexer hiding (Parser)
+import           Yu.Syntax.Lexer hiding (Parser)
 import           Yu.Error
-import           Yu.Located
 
 --------------------------
 -- Abstract Syntax Tree --

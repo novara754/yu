@@ -1,4 +1,4 @@
-module Yu.Located
+module Yu.Syntax.Located
  ( Located(..)
  , Span(..)
  , spanPos

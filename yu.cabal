@@ -20,10 +20,6 @@ common common-options
 
   build-depends:       base ^>= 4.13.0.0
                      , text
-                     , parser-combinators
-                     , hectoparsec
-                     , errata
-                     , pretty-simple
 
   ghc-options:         -Wall
                        -Wcompat
@@ -44,10 +40,23 @@ executable yu
   import:              common-options
   hs-source-dirs:      app
   main-is:             Main.hs
-  other-modules:       Yu.Lexer
-                       Yu.Parser
+  build-depends:       yu
+  ghc-options:         -threaded
+                       -rtsopts
+                       -with-rtsopts=-N
+
+library
+  import:              common-options
+  hs-source-dirs:      lib
+  exposed-modules:     Yu
                        Yu.Error
-                       Yu.Located
+                       Yu.Syntax.Lexer
+                       Yu.Syntax.Parser
+                       Yu.Syntax.Located
+  build-depends:       parser-combinators
+                     , hectoparsec
+                     , errata
+                     , pretty-simple
   ghc-options:         -threaded
                        -rtsopts
                        -with-rtsopts=-N

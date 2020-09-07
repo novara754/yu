@@ -1,4 +1,4 @@
-module Yu.Lexer
+module Yu.Syntax.Lexer
  ( Located(..)
  , Span(..)
  , Tok(..)
@@ -16,7 +16,7 @@ import           Control.Monad
 import           Hectoparsec.Text
 import           Hectoparsec.Text.Char
 
-import           Yu.Located
+import           Yu.Syntax.Located
 
 -----------------
 -- Token types --

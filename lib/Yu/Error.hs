@@ -9,7 +9,7 @@ import qualified Data.Text as T
 import           Errata
 import           Hectoparsec
 
-import           Yu.Lexer
+import           Yu.Syntax.Lexer
 
 -- | Custom labels for the parser.
 data CustomLabel
