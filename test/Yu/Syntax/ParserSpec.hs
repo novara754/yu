@@ -1,4 +1,4 @@
-module Yu.Syntax.ParserSpec  where
+module Yu.Syntax.ParserSpec (spec) where
 
 import Test.Hspec
 
