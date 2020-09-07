@@ -1,9 +1,4 @@
-packages: ./yu.cabal
-
-source-repository-package
-  type: git
-  location: git://github.com/1Computer1/hectoparsec.git
-
-source-repository-package
-  type: git
-  location: git://github.com/1Computer1/errata.git
+packages: ., ../hectoparsec/dist-newstyle/sdist/hectoparsec-0.1.0.0.tar.gz
+tests: True
+coverage: True
+library-coverage: True
