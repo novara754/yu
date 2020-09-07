@@ -1,3 +1,5 @@
+![CI](https://github.com/vzwGrey/yu/workflows/CI/badge.svg?branch=master)
+
 # yu
 
 An imperative toy programming language.
