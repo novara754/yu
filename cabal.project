@@ -3,3 +3,4 @@ packages: ./yu.cabal
 source-repository-package
   type: git
   location: git@github.com:1Computer1/hectoparsec
+  tag: 1adf7198820ffd7eaa2ad968a88efdc117aa0472
