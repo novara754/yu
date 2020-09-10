@@ -61,6 +61,7 @@ data Expr
   | VarRef Identifier
   | BinOp Identifier (Located Expr) (Located Expr)
   | FuncCall (Located Expr) [Located Expr]
+  | Grouped (Located Expr)
   deriving (Show, Eq, Ord)
 
 -------------
@@ -179,7 +180,7 @@ pExprBase :: Parser (Located Expr)
 pExprBase = choice
   [ pLiteral
   , pVarRef
-  , between (token LParen) (token RParen) pExpr
+  , pGrouped
   ]
 
 -- | Parser for literals.
@@ -193,6 +194,14 @@ pVarRef :: Parser (Located Expr)
 pVarRef = do
   var <- pIdent
   pure $ Located (lSpan var) (VarRef var)
+
+-- | Parser for grouped (parenthesised) expressions.
+pGrouped :: Parser (Located Expr)
+pGrouped = do
+  o <- token LParen
+  v <- pExpr
+  c <- token RParen
+  pure $ Located (lSpan o <> lSpan c) (Grouped v)
 
 -- | Helper parser for parsing identifiers and getting their text.
 pIdent :: Parser Identifier
