@@ -39,7 +39,6 @@ fun main() {
     let z = addTwice(x, y);
     print(z); // -> 30
 }
-
 ```
 
 ## Grammar
