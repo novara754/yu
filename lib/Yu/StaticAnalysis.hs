@@ -11,7 +11,8 @@ module Yu.StaticAnalysis
 
 import           Yu.StaticAnalysis.Types
 import qualified Yu.StaticAnalysis.Precedences as P
+import           Yu.Syntax.AST
 
 -- | Apply all static analysis operations and transformations.
-applyAll :: StaticAnalyzer
+applyAll :: StaticAnalyzer 'Parse 'Parse
 applyAll = P.applyPrecedences

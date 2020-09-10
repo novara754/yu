@@ -14,4 +14,4 @@ import Yu.Syntax.Parser
 import Yu.Error
 
 -- | Type for static analyzers.
-type StaticAnalyzer = Module -> Writer [CustomError] Module
+type StaticAnalyzer (d1 :: Phase) (d2 :: Phase) = Module d1 -> Writer [CustomError] (Module d1)

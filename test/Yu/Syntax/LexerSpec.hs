@@ -7,6 +7,7 @@ import qualified Data.Text as T
 import           Data.Text.Arbitrary()
 import           Hectoparsec.Lexer
 import           Yu.Syntax.Lexer
+import           Yu.Syntax.Span
 
 -- | Helper function to lex text and remove location data to leave
 --   only the actual tokens.

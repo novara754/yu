@@ -18,19 +18,20 @@ import           Text.Pretty.Simple
 
 import           Yu.Syntax.Lexer
 import           Yu.Syntax.Parser
+import           Yu.Syntax.Span
 import           Yu.Error
 
 -- | Helper function to parse raw source code into an AST.
 parse :: FilePath
       -> T.Text
-      -> Either (ParseError [Located Tok] CustomError CustomLabel) Module
+      -> Either (ParseError [Located Tok] CustomError CustomLabel) (Module 'Parse)
 parse fp src = do
   case evalLexer pLexer fp src of
     Left _   -> error "testParse: lexer cannot error"
     Right ts -> evalParser pModule ts
 
 -- | Pretty print an AST.
-printAST :: Module -> IO ()
+printAST :: (Module 'Parse) -> IO ()
 printAST = pPrint
 
 -- | Pretty print errors that occured during parsing.

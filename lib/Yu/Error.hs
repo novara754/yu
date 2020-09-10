@@ -17,6 +17,7 @@ import           Errata
 import           Hectoparsec
 
 import           Yu.Syntax.Lexer
+import           Yu.Syntax.Span
 
 -- | Custom labels for the parser.
 data CustomLabel

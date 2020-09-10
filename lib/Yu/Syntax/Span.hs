@@ -1,17 +1,21 @@
 {-|
-Module      : Yu.Syntax.Location
+Module      : Yu.Syntax.Span
 Description : Location data.
 
 This module contains types and functions to work with location data
 of Yu language items: spans of tokens, their lines and columns, etc..
 -}
-module Yu.Syntax.Located
- ( Located(..)
+module Yu.Syntax.Span
+ ( HasSpan(..)
+ , Located(..)
  , Span(..)
  , spanPos
  ) where
 
 import Hectoparsec.Lexer
+
+class HasSpan l where
+  span :: l -> Span
 
 -- | A located item.
 data Located a = Located
@@ -26,6 +30,9 @@ instance Show a => Show (Located a) where
 
 instance Functor Located where
   fmap f (Located s x) = Located s $ f x
+
+instance HasSpan (Located a) where
+  span = lSpan
 
 -- | Location and span of a located item.
 data Span = Span

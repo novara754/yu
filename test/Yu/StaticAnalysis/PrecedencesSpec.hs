@@ -3,37 +3,45 @@ module Yu.StaticAnalysis.PrecedencesSpec (spec) where
 import Test.Hspec
 
 import Control.Monad.Writer.Strict
-import Yu.Syntax.Lexer
+import Yu.Syntax.Span
 import Yu.Syntax.Parser
 
 import Yu.StaticAnalysis.Precedences
 import Yu.StaticAnalysis.Precedences.Internal
 
+-- | Empty span.
+eSpan :: Span
+eSpan = (Span "" (0, 0) (0, 0) (0, 0))
+
 -- | Helper function to wrap an item in an empty location, a span with 0 size.
 eLoc :: a -> Located a
-eLoc x = Located (Span "" (0, 0) (0, 0) (0, 0)) x
+eLoc = Located eSpan
 
 spec :: Spec
 spec = do
   describe "applyPrecedences" $ do
     it "doesnt change a module without binary operations" $ do
       let ast = Module
-            [ eLoc $ ModuleDecl (eLoc "main")
-            , eLoc $ FunctionDecl
+            [ ModuleDecl eSpan (eLoc "main")
+            , FunctionDecl
+                eSpan
                 (eLoc "main")
                 []
                 Nothing
-                [ eLoc $ VarDecl
+                [ VarDecl
+                    eSpan
                     (eLoc "a")
                     (Just $ eLoc "int")
-                    (eLoc $ ExprIntLiteral 5)
-                , eLoc $ VarDecl
+                    (Literal eSpan 5)
+                , VarDecl
+                    eSpan
                     (eLoc "b")
                     Nothing
-                    (eLoc . VarRef $ eLoc "a")
-                , eLoc . ExprStmt . eLoc $ FuncCall
-                    (eLoc . VarRef $ eLoc "print")
-                    [eLoc . VarRef $ eLoc "b"]
+                    (VarRef eSpan $ eLoc "a")
+                , ExprStmt eSpan $ FuncCall
+                    eSpan
+                    (VarRef eSpan $ eLoc "print")
+                    [VarRef eSpan $ eLoc "b"]
                 ]
             ]
       runWriter (applyPrecedences ast) `shouldBe` (ast, [])
@@ -41,98 +49,118 @@ spec = do
   describe "applyExpr" $ do
     it "leaves single binary operations alone" $ do
       let asts =
-            [ BinOp (eLoc "+") (eLoc $ ExprIntLiteral  5) (eLoc $ ExprIntLiteral   3)
-            , BinOp (eLoc "*") (eLoc $ ExprIntLiteral  1) (eLoc $ ExprIntLiteral   2)
-            , BinOp (eLoc "/") (eLoc $ ExprIntLiteral  2) (eLoc $ ExprIntLiteral  10)
-            , BinOp (eLoc "&") (eLoc $ ExprIntLiteral 98) (eLoc $ ExprIntLiteral 103)
+            [ BinOp eSpan (eLoc "+") (Literal eSpan  5) (Literal eSpan   3)
+            , BinOp eSpan (eLoc "*") (Literal eSpan  1) (Literal eSpan   2)
+            , BinOp eSpan (eLoc "/") (Literal eSpan  2) (Literal eSpan  10)
+            , BinOp eSpan (eLoc "&") (Literal eSpan 98) (Literal eSpan 103)
             ]
       map applyExpr asts `shouldBe` asts
 
     it "reorders simple expressions with two binops" $ do
       let ast = BinOp
+            eSpan
             (eLoc "*")
-            (eLoc $ ExprIntLiteral 5)
-            (eLoc $ BinOp
+            (Literal eSpan 5)
+            (BinOp
+              eSpan
               (eLoc "+")
-              (eLoc $ ExprIntLiteral 7)
-              (eLoc $ ExprIntLiteral 3)
+              (Literal eSpan 7)
+              (Literal eSpan 3)
             )
       let expected = BinOp
+            eSpan
             (eLoc "+")
-            (eLoc $ BinOp
+            (BinOp
+              eSpan
               (eLoc "*")
-              (eLoc $ ExprIntLiteral 5)
-              (eLoc $ ExprIntLiteral 7)
+              (Literal eSpan 5)
+              (Literal eSpan 7)
             )
-            (eLoc $ ExprIntLiteral 3)
+            (Literal eSpan 3)
       applyExpr ast `shouldBe` expected
 
     it "reorders semi complex expressions with multiple binops" $ do
       let ast = BinOp
+            eSpan
             (eLoc "/")
-            (eLoc $ ExprIntLiteral 5)
-            (eLoc $ BinOp
+            (Literal eSpan 5)
+            (BinOp
+              eSpan
               (eLoc "+")
-              (eLoc $ ExprIntLiteral 5)
-              (eLoc $ BinOp
+              (Literal eSpan 5)
+              (BinOp
+                eSpan
                 (eLoc "*")
-                (eLoc $ ExprIntLiteral 10)
-                (eLoc $ ExprIntLiteral 5)
+                (Literal eSpan 10)
+                (Literal eSpan 5)
               )
             )
       let expected = BinOp
+            eSpan
             (eLoc "+")
-            (eLoc $ BinOp
+            (BinOp
+              eSpan
               (eLoc "/")
-                (eLoc $ ExprIntLiteral 5)
-                (eLoc $ ExprIntLiteral 5)
+                (Literal eSpan 5)
+                (Literal eSpan 5)
               )
-            (eLoc $ BinOp
+            (BinOp
+              eSpan
               (eLoc "*")
-              (eLoc $ ExprIntLiteral 10)
-              (eLoc $ ExprIntLiteral 5)
+              (Literal eSpan 10)
+              (Literal eSpan 5)
             )
       applyExpr ast `shouldBe` expected
 
     it "reorders complex expressions with multiple binops" $ do
       let ast = BinOp
-            (eLoc $ "+")
-            (eLoc $ ExprIntLiteral 1)
-            (eLoc $ BinOp
+            eSpan
+            (eLoc "+")
+            (Literal eSpan 1)
+            (BinOp
+              eSpan
               (eLoc "*")
-              (eLoc $ ExprIntLiteral 2)
-              (eLoc $ BinOp
+              (Literal eSpan 2)
+              (BinOp
+                eSpan
                 (eLoc "/")
-                (eLoc $ ExprIntLiteral 5)
-                (eLoc $ BinOp
+                (Literal eSpan 5)
+                (BinOp
+                  eSpan
                   (eLoc "+")
-                  (eLoc $ ExprIntLiteral 5)
-                  (eLoc $ BinOp
+                  (Literal eSpan 5)
+                  (BinOp
+                    eSpan
                     (eLoc "*")
-                    (eLoc $ ExprIntLiteral 10)
-                    (eLoc $ ExprIntLiteral 5)
+                    (Literal eSpan 10)
+                    (Literal eSpan 5)
                   )
                 )
               )
             )
       let expected = BinOp
+            eSpan
             (eLoc "+")
-            (eLoc $ ExprIntLiteral 1)
-            (eLoc $ BinOp
+            (Literal eSpan 1)
+            (BinOp
+              eSpan
               (eLoc "+")
-              (eLoc $ BinOp
+              (BinOp
+                eSpan
                 (eLoc "*")
-                (eLoc $ ExprIntLiteral 2)
-                (eLoc $ BinOp
+                (Literal eSpan 2)
+                (BinOp
+                  eSpan
                   (eLoc "/")
-                  (eLoc $ ExprIntLiteral 5)
-                  (eLoc $ ExprIntLiteral 5)
+                  (Literal eSpan 5)
+                  (Literal eSpan 5)
                 )
               )
-              (eLoc $ BinOp
+              (BinOp
+                eSpan
                 (eLoc "*")
-                (eLoc $ ExprIntLiteral 10)
-                (eLoc $ ExprIntLiteral 5)
+                (Literal eSpan 10)
+                (Literal eSpan 5)
               )
             )
       applyExpr ast `shouldBe` expected

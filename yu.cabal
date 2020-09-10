@@ -20,6 +20,14 @@ source-repository head
 common common-options
   default-extensions:  OverloadedStrings
                        LambdaCase
+                       TypeFamilies
+                       DataKinds
+                       ConstraintKinds
+                       StandaloneDeriving
+                       FlexibleContexts
+                       FlexibleInstances
+                       UndecidableInstances
+                       TypeApplications
 
   build-depends:       base >= 4.13.0.0 && < 5.0
                      , text >= 1.2.4.0
@@ -55,7 +63,8 @@ library
                        Yu.Error
                        Yu.Syntax.Lexer
                        Yu.Syntax.Parser
-                       Yu.Syntax.Located
+                       Yu.Syntax.Span
+                       Yu.Syntax.AST
                        Yu.StaticAnalysis
                        Yu.StaticAnalysis.Types
                        Yu.StaticAnalysis.Precedences

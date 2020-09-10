@@ -6,8 +6,7 @@ This module contains types and parsers required to lex Yu source code.
 -}
 
 module Yu.Syntax.Lexer
- ( Located(..)
- , Span(..)
+ ( Span(..)
  , Tok(..)
  , Parser
  , pLexer
@@ -22,7 +21,7 @@ import           Control.Monad
 import           Control.Monad.Combinators
 import           Hectoparsec.Lexer
 
-import           Yu.Syntax.Located
+import           Yu.Syntax.Span
 
 -----------------
 -- Token types --
