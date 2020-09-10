@@ -2,7 +2,7 @@ module Yu.Syntax.ParserSpec (spec) where
 
 import Test.Hspec
 
-import           Hectoparsec.Text
+import           Hectoparsec.Parser
 import           Yu.Syntax.Lexer
 import           Yu.Syntax.Parser
 import           Yu.Error
@@ -14,8 +14,8 @@ eLoc x = Located (Span "" (0, 0) (0, 0) (0, 0)) x
 -- | Helper function to parse a tokenstream text and remove location data to leave
 --   only the actual tokens. Automatically gives each token in the input
 --   an empty location.
-doParse :: [Tok] -> Either (ParseErrors [Located Tok] () CustomError CustomLabel) Module
-doParse = evalParsec pModule () . map eLoc
+doParse :: [Tok] -> Either (ParseError [Located Tok] CustomError CustomLabel) Module
+doParse = evalParser pModule . map eLoc
 
 spec :: Spec
 spec = do

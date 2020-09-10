@@ -17,11 +17,10 @@ module Yu.Syntax.Lexer
  ) where
 
 import           Data.Char
-import           Data.Void
 import qualified Data.Text as T
 import           Control.Monad
-import           Hectoparsec.Text
-import           Hectoparsec.Text.Char
+import           Control.Monad.Combinators
+import           Hectoparsec.Lexer
 
 import           Yu.Syntax.Located
 
@@ -66,7 +65,7 @@ isInt _              = False
 -------------
 
 -- | Parser for lexing the raw input text.
-type Parser = Partext T.Text Void T.Text
+type Parser = Lexer T.Text
 
 -- | The lexer.
 pLexer :: Parser [Located Tok]
@@ -90,7 +89,7 @@ pToken = choice
 -- | Parser for keywords.
 pKeyword :: Parser (Located Tok)
 pKeyword = located $ do
-  kw <- choice $ map string ["module", "fun", "let", "return"]
+  kw <- choice $ map tokens ["module", "fun", "let", "return"]
   notFollowedBy $ satisfy isAlphaNum
   pure $ Keyword kw
 
@@ -130,7 +129,7 @@ pInt = located $ do
 pError :: Parser (Located Tok)
 pError = located $ do
   notFollowedBy endOfInput
-  x <- anyChar
+  x <- anyToken
   pure $ Unknown x
 
 pEof :: Parser (Located Tok)
@@ -147,7 +146,7 @@ legalIdent trailing c = isAlpha c || (trailing && isDigit c)
 -- | Helper parser for symbols that represent themselves.
 symbol :: T.Text -> Tok -> Parser (Located Tok)
 symbol s t = located $ do
-  _ <- string s
+  _ <- tokens s
   pure t
 
 -- | Helper parser to add location data to a parser result.
@@ -164,11 +163,7 @@ located p = do
 -- | Parser to handle trivia, i.e. whitespace and comments which are discarded.
 trivia :: Parser ()
 trivia = void . many . choice $
-  [ void spaces1
-  , void $ string "//" *> tokensWhile (/= '\n')
-  , void $ string "/*" *> manyTill anyToken (string "*/")
+  [ void $ tokensWhile1 isSpace
+  , void $ tokens "//" *> tokensWhile (/= '\n')
+  , void $ tokens "/*" *> manyTill anyToken (tokens "*/")
   ]
-
--- | The custom state is `Pos` because `Partext` is used.
-getPos :: Parser Pos
-getPos = getCustom

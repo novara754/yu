@@ -11,7 +11,7 @@ module Yu.Syntax.Located
  , spanPos
  ) where
 
-import Hectoparsec.Text
+import Hectoparsec.Lexer
 
 -- | A located item.
 data Located a = Located

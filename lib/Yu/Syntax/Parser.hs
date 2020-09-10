@@ -17,7 +17,9 @@ module Yu.Syntax.Parser
  ) where
 
 import qualified Data.Text as T
-import           Hectoparsec hiding (token, tokens)
+import           Control.Monad.Combinators
+import           Hectoparsec.Parser hiding (Parser)
+import qualified Hectoparsec.Parser as H
 
 import           Yu.Syntax.Lexer hiding (Parser)
 import           Yu.Error
@@ -69,7 +71,7 @@ data Expr
 type TokStream = [Located Tok]
 
 -- | Parser to turn tokens into an AST.
-type Parser = Parsec TokStream () CustomError CustomLabel
+type Parser = H.Parser TokStream CustomError CustomLabel
 
 -- | Parser for whole modules.
 pModule :: Parser Module
@@ -206,8 +208,7 @@ pOpIdent = label LabelIdent $ do
 
 -- | Helper parser to match tokens.
 token :: Tok -> Parser (Located Tok)
-token t = matchToken $ \case
-  Nothing -> error "token: reached end of stream"
-  Just x  -> if lValue x == t
+token t = matchToken $ \x ->
+  if lValue x == t
     then Right x
-    else Left $ ErrorItemHints (Just $ HintToken x) [HintLabel $ LabelTok t]
+    else Left $ ErrorItemHints x [LabelTok t]
