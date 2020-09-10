@@ -159,7 +159,6 @@ located p = do
   trivia
   pure $ Located (spanPos a b) v
 
-
 -- | Parser to handle trivia, i.e. whitespace and comments which are discarded.
 trivia :: Parser ()
 trivia = void . many . choice $
