@@ -56,10 +56,16 @@ library
                        Yu.Syntax.Lexer
                        Yu.Syntax.Parser
                        Yu.Syntax.Located
+                       Yu.StaticAnalysis
+                       Yu.StaticAnalysis.Types
+                       Yu.StaticAnalysis.Precedences
+                       Yu.StaticAnalysis.Precedences.Internal
   build-depends:       parser-combinators >= 1.2.1
                      , hectoparsec >= 0.1.0.0
                      , errata >= 0.1.0.0
                      , pretty-simple >= 3.3.0.0
+                     , containers >= 0.6.0.0
+                     , mtl >= 0.2.0.0
 
 test-suite yu-test
   import:              common-options
@@ -68,11 +74,13 @@ test-suite yu-test
   main-is:             Spec.hs
   other-modules:       Yu.Syntax.LexerSpec
                        Yu.Syntax.ParserSpec
+                       Yu.StaticAnalysis.PrecedencesSpec
   build-depends:       yu
                      , hectoparsec >= 0.1.0.0
                      , hspec >= 2.7.4
                      , QuickCheck >= 2.14.1
                      , quickcheck-text >= 0.1.2.1
+                     , mtl >= 0.2.0.0
   build-tool-depends:  hspec-discover:hspec-discover
   ghc-options:         -threaded
                        -rtsopts

@@ -24,6 +24,8 @@ instance Show a => Show (Located a) where
     where
       s = show l1 <> ":" <> show c1 <> "-" <> show l2 <> ":" <> show c2 <> " " <> show x
 
+instance Functor Located where
+  fmap f (Located s x) = Located s $ f x
 
 -- | Location and span of a located item.
 data Span = Span
