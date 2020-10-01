@@ -7,7 +7,7 @@ import Hectoparsec.Parser
 import Yu.Syntax.Span
 import Yu.Syntax.Lexer
 import Yu.Syntax.Parser
-import Yu.Error
+import Yu.Syntax.Error
 
 -- | Helper class to strip decorations from a parse tree.
 class StripDec (n :: Phase -> Type) where
@@ -39,7 +39,7 @@ eLoc x = Located (Span "" (0, 0) (0, 0) (0, 0)) x
 -- | Helper function to parse a tokenstream text and remove location data to leave
 --   only the actual tokens. Automatically gives each token in the input
 --   an empty location.
-doParse :: [Tok] -> Either (ParseError [Located Tok] CustomError CustomLabel) (Module 'NoDec)
+doParse :: [Tok] -> Either (ParseError [Located Tok] CustomParserError CustomLabel) (Module 'NoDec)
 doParse = fmap strip . evalParser pModule . map eLoc
 
 spec :: Spec

@@ -60,7 +60,7 @@ library
   import:              common-options
   hs-source-dirs:      lib
   exposed-modules:     Yu
-                       Yu.Error
+                       Yu.Syntax.Error
                        Yu.Syntax.Lexer
                        Yu.Syntax.Parser
                        Yu.Syntax.Span

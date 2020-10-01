@@ -1,13 +1,13 @@
 {-|
-Module      : Yu.Error
+Module      : Yu.Syntax.Error
 Description : Error & label types and pretty printing.
 
 This module contains types for Yu language errors and labels for language items.
 Also contains functions to parse these errors for use with Errata.
 -}
-module Yu.Error
+module Yu.Syntax.Error
  ( CustomLabel(..)
- , CustomError(..)
+ , CustomParserError(..)
  , parseErrorErrata
  ) where
 
@@ -33,12 +33,12 @@ data CustomLabel
   deriving (Show, Eq, Ord)
 
 -- | Custom errors for the parser.
-data CustomError
-  = CustomError
+data CustomParserError
+  = CustomParserError
   deriving (Show, Eq, Ord)
 
 -- | Turn parser errors into Errata errors.
-parseErrorErrata :: ParseError [Located Tok] CustomError CustomLabel -> Errata
+parseErrorErrata :: ParseError [Located Tok] CustomParserError CustomLabel -> Errata
 parseErrorErrata (ParseError _ ei) =
     -- Because our parser has no custom state i.e. we chose not to keep track of source positions, not all errors can
     -- be printed correctly. However, we purposely constructed our parser in a way that those errors cannot ever occur,

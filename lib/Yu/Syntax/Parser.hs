@@ -19,13 +19,13 @@ import qualified Hectoparsec.Parser as H
 import           Yu.Syntax.Lexer hiding (Parser)
 import           Yu.Syntax.Span
 import           Yu.Syntax.AST
-import           Yu.Error
+import           Yu.Syntax.Error
 
 -- | Token stream.
 type TokStream = [Located Tok]
 
 -- | Parser to turn tokens into an AST.
-type Parser = H.Parser TokStream CustomError CustomLabel
+type Parser = H.Parser TokStream CustomParserError CustomLabel
 
 -- | Parser for whole modules.
 pModule :: Parser (Module 'Parse)
