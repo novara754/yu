@@ -52,4 +52,4 @@ instance Semigroup Span where
 
 -- | Construct a span from two positions.
 spanPos :: Pos -> Pos -> Span
-spanPos (Pos f ls cs os) (Pos _ le ce oe) = Span f (os, oe) (ls, cs) (le, ce)
+spanPos (Pos f os ls cs) (Pos _ oe le ce) = Span f (os, oe) (ls, cs) (le, ce)
