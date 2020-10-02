@@ -64,7 +64,10 @@ addDef l n = do
           []      -> Nothing
           scope:_ -> find (\d' -> lValue (defName d) == lValue (defName d')) (scopeDefs scope)
   case exists of
-    Nothing -> modify (\((DefinitionScope n' ds):ss) -> (DefinitionScope n' (d:ds)):ss)
+    Nothing ->
+      let f [] = error "addDef: attempted to add definition with no scopes present"
+          f ((DefinitionScope n' ds):ss) = (DefinitionScope n' (d:ds)):ss
+      in modify f
     Just e  -> tell [DuplicateDefinition n $ defName e]
 
 
@@ -76,7 +79,7 @@ resolveNamesModule :: Module 'Parse
                    -> NameResolutionState (Module 'NameRes)
 resolveNamesModule (Module d) = do
   pushScope "<module>"
-  traverse (addDef False) $ mapMaybe getName d
+  traverse_ (addDef False) $ mapMaybe getName d
   d' <- traverse resolveNamesDecl d
   pure $ Module d'
   where
