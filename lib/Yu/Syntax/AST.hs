@@ -7,6 +7,11 @@ Types for the abstract syntax tree.
 
 module Yu.Syntax.AST
   ( Phase(..)
+  , Tok(..)
+  , isIdent
+  , isOpIdent
+  , isInt
+  , TokStream(..)
   , Identifier
   , Module(..)
   , Param(..)
@@ -16,8 +21,10 @@ module Yu.Syntax.AST
   , NamePath
   ) where
 
+import           Data.List (uncons)
 import qualified Data.Text as T
 import           Data.Kind
+import           Hectoparsec
 
 import           Yu.Syntax.Span
 
@@ -59,9 +66,55 @@ type XForAll (c :: Type -> Constraint) (d :: Phase) =
   , c (XGrouped d)
   )
 
+-----------------
+-- Token types --
+-----------------
+
+-- | A token.
+data Tok
+  = Ident T.Text
+  | OpIdent T.Text
+  | Keyword T.Text
+  | IntLiteral Integer
+  | LParen
+  | RParen
+  | LBrace
+  | RBrace
+  | Colon
+  | Semicolon
+  | Comma
+  | Eq
+  | Eof
+  | Unknown Char -- Lexer does not report errors, simply passes them along to parser.
+  deriving (Show, Eq, Ord)
+
+-- | Check whether a token is an identifier.
+isIdent :: Tok -> Bool
+isIdent (Ident _) = True
+isIdent _         = False
+-- | Check whether a token is an operator.
+isOpIdent :: Tok -> Bool
+isOpIdent (OpIdent _) = True
+isOpIdent _           = False
+
+-- | Check whether a token is an integer.
+isInt :: Tok -> Bool
+isInt (IntLiteral _) = True
+isInt _              = False
+
 --------------------------
 -- Abstract Syntax Tree --
 --------------------------
+
+-- | Token stream.
+newtype TokStream = TokStream [Located Tok]
+
+instance Stream TokStream where
+  type Token TokStream = Located Tok
+  type Chunk TokStream = [Located Tok]
+
+  streamUncons (TokStream xs) = fmap TokStream <$> uncons xs
+  updatePosToken _ lt _ = let Span fp _ (l, c) = lSpan lt in Pos fp l c
 
 -- | An identifier for variables, functions, etc.
 type Identifier = Located T.Text

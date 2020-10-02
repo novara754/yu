@@ -16,6 +16,7 @@ import qualified Data.Text as T
 import           Errata
 import           Hectoparsec
 
+import           Yu.Syntax.AST
 import           Yu.Syntax.Lexer
 import           Yu.Syntax.Span
 
@@ -38,25 +39,24 @@ data CustomParserError
   deriving (Show, Eq, Ord)
 
 -- | Turn parser errors into Errata errors.
-parseErrorErrata :: ParseError [Located Tok] CustomParserError CustomLabel -> Errata
-parseErrorErrata (ParseError _ ei) =
+parseErrorErrata :: ParseError TokStream CustomParserError CustomLabel -> Errata
+parseErrorErrata (ParseError _ _ ei) =
     -- Because our parser has no custom state i.e. we chose not to keep track of source positions, not all errors can
     -- be printed correctly. However, we purposely constructed our parser in a way that those errors cannot ever occur,
     -- and that the errors that do occur will provide us with the correct source positions via our 'Span' type.
     case ei of
-        ErrorItemHints (Located (Span fp _ (l1, c1) (l2, c2)) t) hs -> errataSimple
+        ErrorItemLabels (UnexpectedToken (Located (Span fp (l1, c1) (l2, c2)) t)) hs -> errataSimple
           (Just $ red "error: unexpected item")
           (blockMerged'
-              fancyRedStyle
-              fp
-              (l1, c1, Nothing)
-              (l2, c2 - 1, Nothing)
-              Nothing
-              (Just $ makeMessage t hs))
+            fancyRedStyle
+            fp
+            (l1, c1, Nothing)
+            (l2, c2 - 1, Nothing)
+            Nothing
+            (Just $ makeMessage t hs))
           Nothing
 
-        ErrorItemCustom _ -> error "parseErrorErrata: no custom errors emitted yet"
-        ErrorItemFail m   -> error $ "parseErrorErrata, fail: " <> m
+        _ -> error "parseErrorErrata: bad error"
     where
         makeMessage :: Tok -> [CustomLabel] -> T.Text
         makeMessage t hs = "unexpected " <> prettyTok t <> "\nexpected " <> showHints (nub $ sort hs)

@@ -15,56 +15,23 @@ module Yu.Syntax.Lexer
  , isInt
  ) where
 
+import           Data.Void
 import           Data.Char
 import qualified Data.Text as T
 import           Control.Monad
 import           Control.Monad.Combinators
-import           Hectoparsec.Lexer
+import           Hectoparsec hiding (Parser)
+import qualified Hectoparsec as H
 
+import           Yu.Syntax.AST
 import           Yu.Syntax.Span
-
------------------
--- Token types --
------------------
-
--- | A token.
-data Tok
-  = Ident T.Text
-  | OpIdent T.Text
-  | Keyword T.Text
-  | IntLiteral Integer
-  | LParen
-  | RParen
-  | LBrace
-  | RBrace
-  | Colon
-  | Semicolon
-  | Comma
-  | Eq
-  | Eof
-  | Unknown Char -- Lexer does not report errors, simply passes them along to parser.
-  deriving (Show, Eq, Ord)
-
--- | Check whether a token is an identifier.
-isIdent :: Tok -> Bool
-isIdent (Ident _) = True
-isIdent _         = False
--- | Check whether a token is an operator.
-isOpIdent :: Tok -> Bool
-isOpIdent (OpIdent _) = True
-isOpIdent _           = False
-
--- | Check whether a token is an integer.
-isInt :: Tok -> Bool
-isInt (IntLiteral _) = True
-isInt _              = False
 
 -------------
 -- Parsers --
 -------------
 
 -- | Parser for lexing the raw input text.
-type Parser = Lexer T.Text
+type Parser = H.Parser T.Text Void Void
 
 -- | The lexer.
 pLexer :: Parser [Located Tok]
@@ -88,7 +55,7 @@ pToken = choice
 -- | Parser for keywords.
 pKeyword :: Parser (Located Tok)
 pKeyword = located $ do
-  kw <- choice $ map tokens ["module", "fun", "let", "return"]
+  kw <- choice $ map string ["module", "fun", "let", "return"]
   notFollowedBy $ satisfy isAlphaNum
   pure $ Keyword kw
 
@@ -109,19 +76,19 @@ pSymbol = choice
 pIdent :: Parser (Located Tok)
 pIdent = located $ do
   x <- satisfy $ legalIdent False
-  xs <- tokensWhile $ legalIdent True
+  xs <- tokenWhile $ legalIdent True
   pure . Ident $ T.cons x xs
 
 -- | Parser for operators.
 pOpIdent :: Parser (Located Tok)
 pOpIdent = located $ do
-  x <- tokensWhile1 $ \c -> isPunctuation c || isSymbol c
+  x <- tokenWhile1 $ \c -> isPunctuation c || isSymbol c
   pure $ OpIdent x
 
 -- | Parser for integer literals.
 pInt :: Parser (Located Tok)
 pInt = located $ do
-  xs <- tokensWhile1 isDigit
+  xs <- tokenWhile1 isDigit
   pure . IntLiteral . read . T.unpack $ xs
 
 -- | Parser for unknown/illegal characters.
@@ -145,7 +112,7 @@ legalIdent trailing c = isAlpha c || (trailing && isDigit c)
 -- | Helper parser for symbols that represent themselves.
 symbol :: T.Text -> Tok -> Parser (Located Tok)
 symbol s t = located $ do
-  _ <- tokens s
+  _ <- string s
   pure t
 
 -- | Helper parser to add location data to a parser result.
@@ -161,7 +128,7 @@ located p = do
 -- | Parser to handle trivia, i.e. whitespace and comments which are discarded.
 trivia :: Parser ()
 trivia = void . many . choice $
-  [ void $ tokensWhile1 isSpace
-  , void $ tokens "//" *> tokensWhile (/= '\n')
-  , void $ tokens "/*" *> manyTill anyToken (tokens "*/")
+  [ void $ tokenWhile1 isSpace
+  , void $ string "//" *> tokenWhile (/= '\n')
+  , void $ string "/*" *> manyTill anyToken (string "*/")
   ]

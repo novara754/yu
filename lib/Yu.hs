@@ -21,7 +21,6 @@ import           Text.Pretty.Simple
 
 import           Yu.Syntax.Lexer
 import           Yu.Syntax.Parser
-import           Yu.Syntax.Span
 import           Yu.Syntax.Error
 import qualified Yu.StaticAnalysis as SA
 import           Yu.StaticAnalysis.Types
@@ -29,11 +28,11 @@ import           Yu.StaticAnalysis.Types
 -- | Helper function to parse raw source code into an AST.
 parse :: FilePath
       -> T.Text
-      -> Either (ParseError [Located Tok] CustomParserError CustomLabel) (Module 'Parse)
+      -> Either (ParseError TokStream CustomParserError CustomLabel) (Module 'Parse)
 parse fp src = do
-  case evalLexer pLexer fp src of
+  case evalParser pLexer fp src of
     Left _   -> error "testParse: lexer cannot error"
-    Right ts -> evalParser pModule ts
+    Right ts -> evalParser pModule fp (TokStream ts)
 
 -- | Run static analysis.
 staticAnalyze :: Module 'Parse -> Either [SA.StaticAnalysisError] (Module 'NameRes)
@@ -48,7 +47,7 @@ printAST :: (Module 'NameRes) -> IO ()
 printAST = pPrint
 
 -- | Pretty print errors that occured during parsing.
-printParseErrors :: T.Text -> ParseError [Located Tok] CustomParserError CustomLabel -> IO ()
+printParseErrors :: T.Text -> ParseError TokStream CustomParserError CustomLabel -> IO ()
 printParseErrors src es = TL.putStrLn $ prettyErrors src [parseErrorErrata es]
 
 -- | Pretty print errors that occured during static analysis.

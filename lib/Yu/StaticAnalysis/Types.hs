@@ -34,7 +34,7 @@ analysisErrorErrata (NameResErr e) = nameResErr e
 
 -- | Turn name resolution errors into Errata errors.
 nameResErr :: NameResolutionError -> Errata
-nameResErr (UndefinedReference (Located (Span fp _ (l1, c1) (l2, c2)) n)) = errataSimple
+nameResErr (UndefinedReference (Located (Span fp (l1, c1) (l2, c2)) n)) = errataSimple
   (Just $ red "error: reference to undefined symbol")
   (blockMerged'
     fancyRedStyle
@@ -46,8 +46,8 @@ nameResErr (UndefinedReference (Located (Span fp _ (l1, c1) (l2, c2)) n)) = erra
   )
   Nothing
 nameResErr (DuplicateDefinition i1 i2) =
-  let (Located (Span fp _ (l11, c11) (_, c12)) _) = i1
-      (Located (Span _  _ (l21, c21) (_, c22)) _) = i2
+  let (Located (Span fp (l11, c11) (_, c12)) _) = i1
+      (Located (Span _  (l21, c21) (_, c22)) _) = i2
   in errataSimple
       (Just $ red "error: redefinition of symbol")
       (blockConnected
