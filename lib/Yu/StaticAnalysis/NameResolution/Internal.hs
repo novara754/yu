@@ -25,6 +25,9 @@ import           Yu.Syntax.AST
 import           Yu.Syntax.Span
 import           Yu.StaticAnalysis.Types
 
+-- | Monad for name resolution.
+type NameResolutionState a = WriterT [NameResolutionError] (State [DefinitionScope]) a
+
 -- | Definition, possibly function scoped.
 data Definition = Definition
   { local   :: Bool
@@ -38,22 +41,21 @@ data DefinitionScope = DefinitionScope
   } deriving (Show, Eq, Ord)
 
 -- | Push a new named scope on the scope stack.
-pushScope :: MonadState [DefinitionScope] m => T.Text -> m ()
+pushScope :: T.Text -> NameResolutionState ()
 pushScope n = let d = DefinitionScope n []
               in modify (\ss -> d : ss)
 
 -- | Remove the current scope from the scope stack.
-popScope :: MonadState [DefinitionScope] m => m ()
+popScope :: NameResolutionState ()
 popScope = modify f
   where
     f []     = []
     f (_:ss) = ss
 
 -- | Add a new definition to the current scope.
-addDef :: (MonadState [DefinitionScope] m, MonadWriter [NameResolutionError] m)
-       => Bool
+addDef :: Bool
        -> Identifier
-       -> m ()
+       -> NameResolutionState ()
 addDef l n = do
   scopes <- get
   let d = Definition l n
@@ -71,7 +73,7 @@ hasDef n (DefinitionScope _ d) = n `elem` map (lValue . defName) d
 
 -- | Resolve names in a module.
 resolveNamesModule :: Module 'Parse
-                   -> WriterT [NameResolutionError] (State [DefinitionScope]) (Module 'NameRes)
+                   -> NameResolutionState (Module 'NameRes)
 resolveNamesModule (Module d) = do
   pushScope "<module>"
   traverse (addDef False) $ mapMaybe getName d
@@ -83,7 +85,7 @@ resolveNamesModule (Module d) = do
 
 -- | Resolve names in declarations.
 resolveNamesDecl :: Decl 'Parse
-                 -> WriterT [NameResolutionError] (State [DefinitionScope]) (Decl 'NameRes)
+                 -> NameResolutionState (Decl 'NameRes)
 resolveNamesDecl (ModuleDecl s n)         = pure $ ModuleDecl s n
 resolveNamesDecl (FunctionDecl s n p r b) = do
   pushScope $ lValue n
@@ -95,7 +97,7 @@ resolveNamesDecl (FunctionDecl s n p r b) = do
 
 -- | Resolve names in statements.
 resolveNamesStmt :: Stmt 'Parse
-                 -> WriterT [NameResolutionError] (State [DefinitionScope]) (Stmt 'NameRes)
+                 -> NameResolutionState (Stmt 'NameRes)
 resolveNamesStmt (ExprStmt s v)    = ExprStmt s <$> resolveNamesExpr v
 resolveNamesStmt (Return s v)      = Return s <$> resolveNamesExpr v
 resolveNamesStmt (VarDecl s n t v) = do
@@ -104,7 +106,7 @@ resolveNamesStmt (VarDecl s n t v) = do
 
 -- | Resolve names in expressions.
 resolveNamesExpr :: Expr 'Parse
-                 -> WriterT [NameResolutionError] (State [DefinitionScope]) (Expr 'NameRes)
+                 -> NameResolutionState (Expr 'NameRes)
 resolveNamesExpr (Literal s v)    = pure $ Literal s v
 resolveNamesExpr (Grouped s v)    = Grouped s <$> resolveNamesExpr v
 resolveNamesExpr (BinOp s o l r)  = do
