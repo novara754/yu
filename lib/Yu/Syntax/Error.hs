@@ -50,6 +50,7 @@ parseErrorErrata (ParseError _ _ ei) =
           (blockMerged'
             fancyRedStyle
             fp
+            Nothing
             (l1, c1, Nothing)
             (l2, c2 - 1, Nothing)
             Nothing

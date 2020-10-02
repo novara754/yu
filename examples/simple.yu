@@ -8,6 +8,14 @@ fun addTwice(x: int, y: int): int {
 }
 
 /*
+ * Print an integer.
+ *
+ * Note: This is a temporary dummy function just so
+ *       that name resolution works.
+ */
+fun print(m: int) {}
+
+/*
  * Entry point of the program.
  */
 fun main() {

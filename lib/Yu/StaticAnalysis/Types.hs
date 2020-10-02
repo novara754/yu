@@ -39,6 +39,7 @@ nameResErr (UndefinedReference (Located (Span fp (l1, c1) (l2, c2)) n)) = errata
   (blockMerged'
     fancyRedStyle
     fp
+    Nothing
     (l1, c1, Nothing)
     (l2, c2 - 1, Nothing)
     Nothing
@@ -53,6 +54,7 @@ nameResErr (DuplicateDefinition i1 i2) =
       (blockConnected
         fancyRedStyle
         fp
+        Nothing
         (l21, c21, c22, Just $ "first definition here")
         (l11, c11, c12, Just $ "second definition here")
         Nothing
