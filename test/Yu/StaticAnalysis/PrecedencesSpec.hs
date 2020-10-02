@@ -2,7 +2,7 @@ module Yu.StaticAnalysis.PrecedencesSpec (spec) where
 
 import Test.Hspec
 
-import Control.Monad.Writer.Strict
+import Control.Monad.Writer
 import Yu.Syntax.Span
 import Yu.Syntax.Parser
 
@@ -11,7 +11,7 @@ import Yu.StaticAnalysis.Precedences.Internal
 
 -- | Empty span.
 eSpan :: Span
-eSpan = (Span "" (0, 0) (0, 0) (0, 0))
+eSpan = (Span "" (0, 0) (0, 0))
 
 -- | Helper function to wrap an item in an empty location, a span with 0 size.
 eLoc :: a -> Located a
@@ -167,23 +167,23 @@ spec = do
 
     it "accurately updates spans on reordered binops" $ do
       let ast = BinOp
-            (Span "<test>" (0,5) (1,1) (1,6))
-            (Located (Span "<test>" (1,2) (1,2) (1,3)) "*")
-            (Literal (Span "<test>" (0,1) (1,1) (1,2)) 5)
+            (Span "<test>" (1,1) (1,6))
+            (Located (Span "<test>" (1,2) (1,3)) "*")
+            (Literal (Span "<test>" (1,1) (1,2)) 5)
             (BinOp
-              (Span "<test>" (2,5) (1,3) (1,5))
-              (Located (Span "<test>" (3,4) (1,4) (1,5)) "+")
-              (Literal (Span "<test>" (2,3) (1,3) (1,4)) 7)
-              (Literal (Span "<test>" (4,5) (1,5) (1,6)) 3)
+              (Span "<test>"(1,3) (1,5))
+              (Located (Span "<test>" (1,4) (1,5)) "+")
+              (Literal (Span "<test>" (1,3) (1,4)) 7)
+              (Literal (Span "<test>" (1,5) (1,6)) 3)
             )
       let expected = BinOp
-            (Span "<test>" (0,5) (1,1) (1,6))
-            (Located (Span "<test>" (3,4) (1,4) (1,5)) "+")
+            (Span "<test>" (1,1) (1,6))
+            (Located (Span "<test>" (1,4) (1,5)) "+")
             (BinOp
-              (Span "<test>" (0,3) (1,1) (1,4))
-              (Located (Span "<test>" (1,2) (1,2) (1,3)) "*")
-              (Literal (Span "<test>" (0,1) (1,1) (1,2)) 5)
-              (Literal (Span "<test>" (2,3) (1,3) (1,4)) 7)
+              (Span "<test>" (1,1) (1,4))
+              (Located (Span "<test>" (1,2) (1,3)) "*")
+              (Literal (Span "<test>" (1,1) (1,2)) 5)
+              (Literal (Span "<test>" (1,3) (1,4)) 7)
             )
-            (Literal (Span "<test>" (4,5) (1,5) (1,6)) 3)
+            (Literal (Span "<test>" (1,5) (1,6)) 3)
       applyExpr ast `shouldBe` expected

@@ -3,16 +3,17 @@ module Yu.Syntax.LexerSpec (spec) where
 import Test.Hspec
 import Test.QuickCheck
 
+import           Data.Void
 import qualified Data.Text as T
 import           Data.Text.Arbitrary()
-import           Hectoparsec.Lexer
+import           Hectoparsec
 import           Yu.Syntax.Lexer
 import           Yu.Syntax.Span
 
 -- | Helper function to lex text and remove location data to leave
 --   only the actual tokens.
-doLex :: T.Text -> Either Pos [Tok]
-doLex src = map lValue <$> evalLexer pLexer "spec" src
+doLex :: T.Text -> Either (ParseError T.Text Void Void) [Tok]
+doLex src = map lValue <$> evalParser pLexer "spec" src
 
 spec :: Spec
 spec = do

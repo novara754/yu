@@ -3,7 +3,7 @@ module Yu.Syntax.ParserSpec (spec) where
 import Test.Hspec
 
 import Data.Kind
-import Hectoparsec.Parser
+import Hectoparsec
 import Yu.Syntax.Span
 import Yu.Syntax.Lexer
 import Yu.Syntax.Parser
@@ -34,13 +34,13 @@ instance StripDec Expr where
 
 -- | Helper function to wrap an item in an empty location, a span with 0 size.
 eLoc :: a -> Located a
-eLoc x = Located (Span "" (0, 0) (0, 0) (0, 0)) x
+eLoc x = Located (Span "" (0,0) (0,0)) x
 
 -- | Helper function to parse a tokenstream text and remove location data to leave
 --   only the actual tokens. Automatically gives each token in the input
 --   an empty location.
-doParse :: [Tok] -> Either (ParseError [Located Tok] CustomParserError CustomLabel) (Module 'NoDec)
-doParse = fmap strip . evalParser pModule . map eLoc
+doParse :: [Tok] -> Either (ParseError TokStream CustomParserError CustomLabel) (Module 'NoDec)
+doParse = fmap strip . evalParser pModule "spec" . TokStream . map eLoc
 
 spec :: Spec
 spec = do
