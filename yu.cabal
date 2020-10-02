@@ -73,7 +73,7 @@ library
                        Yu.StaticAnalysis.NameResolution.Internal
   build-depends:       parser-combinators >= 1.2.1
                      , hectoparsec >= 0.1.0.0
-                     , errata >= 0.1.0.0
+                     , errata == 0.2.0.0
                      , pretty-simple >= 3.3.0.0
                      , containers >= 0.6.0.0
                      , mtl >= 0.2.0.0
