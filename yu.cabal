@@ -69,6 +69,8 @@ library
                        Yu.StaticAnalysis.Types
                        Yu.StaticAnalysis.Precedences
                        Yu.StaticAnalysis.Precedences.Internal
+                       Yu.StaticAnalysis.NameResolution
+                       Yu.StaticAnalysis.NameResolution.Internal
   build-depends:       parser-combinators >= 1.2.1
                      , hectoparsec >= 0.1.0.0
                      , errata >= 0.1.0.0

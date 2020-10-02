@@ -8,9 +8,11 @@ readParsePrint :: FilePath -> IO ()
 readParsePrint fp = do
   src <- T.readFile fp
   case parse fp src of
-    Left es   -> printErrors src es
-    Right ast -> printAST ast
-
+    Left es   -> printParseErrors src es
+    Right ast ->
+      case staticAnalyze ast of
+        Left es    -> printAnalysisErrors src es
+        Right ast' -> printAST ast'
 
 main :: IO ()
 main = do

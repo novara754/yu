@@ -13,6 +13,7 @@ module Yu.Syntax.AST
   , Decl(..)
   , Stmt(..)
   , Expr(..)
+  , NamePath
   ) where
 
 import qualified Data.Text as T
@@ -26,6 +27,7 @@ import           Yu.Syntax.Span
 data Phase
   = NoDec
   | Parse
+  | NameRes
 
 -------------------
 -- Type families --
@@ -157,3 +159,23 @@ type instance XVarRef       'Parse = Span
 type instance XBinOp        'Parse = Span
 type instance XFuncCall     'Parse = Span
 type instance XGrouped      'Parse = Span
+
+---------------------------
+-- Name Resolution Phase --
+---------------------------
+
+-- | Fully qualified path of a reference.
+type NamePath = [T.Text]
+
+type instance XModuleDecl   'NameRes = (Span)
+type instance XFunctionDecl 'NameRes = (Span)
+
+type instance XVarDecl      'NameRes = (Span)
+type instance XExprStmt     'NameRes = (Span)
+type instance XReturn       'NameRes = (Span)
+
+type instance XLiteral      'NameRes = (Span)
+type instance XVarRef       'NameRes = (Span, Maybe NamePath)
+type instance XBinOp        'NameRes = (Span)
+type instance XFuncCall     'NameRes = (Span)
+type instance XGrouped      'NameRes = (Span)

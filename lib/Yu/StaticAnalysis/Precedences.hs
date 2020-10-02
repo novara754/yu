@@ -9,10 +9,12 @@ module Yu.StaticAnalysis.Precedences
   ( applyPrecedences
   ) where
 
-import           Yu.StaticAnalysis.Types
-import           Yu.StaticAnalysis.Precedences.Internal
-import           Yu.Syntax.Parser
+import Control.Monad.Writer
+
+import Yu.StaticAnalysis.Types
+import Yu.StaticAnalysis.Precedences.Internal
+import Yu.Syntax.Parser
 
 -- | Apply operator precedences to a freshly parsed Yu module.
-applyPrecedences :: StaticAnalyzer 'Parse 'Parse
+applyPrecedences :: Module 'Parse -> Writer [StaticAnalysisError] (Module 'Parse)
 applyPrecedences (Module decls) = pure . Module $ map applyDecl decls
