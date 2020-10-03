@@ -91,7 +91,7 @@ typeErr (MismatchedTypes t e) =
       fp
       Nothing
       (l1, c1, Nothing)
-      (l2, c2, Nothing)
+      (l2, c2 - 1, Nothing)
       Nothing
       (Just $ "expected type `" <> displayType t <> "` but found type `" <> displayType (getType e) <> "`")
     )
@@ -105,7 +105,7 @@ typeErr (NotAFunction e) =
       fp
       Nothing
       (l1, c1, Nothing)
-      (l2, c2, Nothing)
+      (l2, c2 - 1, Nothing)
       Nothing
       Nothing
     )
@@ -117,7 +117,7 @@ typeErr (UnknownType (Located (Span fp (l1, c1) (l2, c2)) n)) = errataSimple
     fp
     Nothing
     (l1, c1, Nothing)
-    (l2, c2, Nothing)
+    (l2, c2 - 1, Nothing)
     Nothing
     (Just $ "reference to `" <> n <> "` has unknown type")
   )
