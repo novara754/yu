@@ -11,14 +11,18 @@ module Yu.Syntax.AST
   , isIdent
   , isOpIdent
   , isInt
+  , isBool
   , TokStream(..)
   , Identifier
   , Module(..)
   , Param(..)
   , Decl(..)
   , Stmt(..)
+  , LiteralValue(..)
   , Expr(..)
   , NamePath
+  , YuType(..)
+  , getType
   ) where
 
 import           Data.List (uncons)
@@ -35,10 +39,13 @@ data Phase
   = NoDec
   | Parse
   | NameRes
+  | TypeCheck
 
 -------------------
 -- Type families --
 -------------------
+
+type family XParam        (d :: Phase)
 
 type family XModuleDecl   (d :: Phase)
 type family XFunctionDecl (d :: Phase)
@@ -64,6 +71,7 @@ type XForAll (c :: Type -> Constraint) (d :: Phase) =
   , c (XBinOp d)
   , c (XFuncCall d)
   , c (XGrouped d)
+  , c (XParam d)
   )
 
 -----------------
@@ -76,6 +84,7 @@ data Tok
   | OpIdent T.Text
   | Keyword T.Text
   | IntLiteral Integer
+  | BoolLiteral Bool
   | LParen
   | RParen
   | LBrace
@@ -102,6 +111,11 @@ isInt :: Tok -> Bool
 isInt (IntLiteral _) = True
 isInt _              = False
 
+-- | Check whether a token is a boolean.
+isBool :: Tok -> Bool
+isBool (BoolLiteral _) = True
+isBool _               = False
+
 --------------------------
 -- Abstract Syntax Tree --
 --------------------------
@@ -120,10 +134,15 @@ instance Stream TokStream where
 type Identifier = Located T.Text
 
 -- | Represents function parameters.
-data Param = Param
-  { paramName :: Identifier
+data Param d = Param
+  { paramAnn  :: XParam d
+  , paramName :: Identifier
   , paramType :: Identifier
-  } deriving (Show, Eq, Ord)
+  }
+
+deriving instance Show (XParam d) => Show (Param d)
+deriving instance Eq (XParam d) => Eq (Param d)
+deriving instance Ord (XParam d) => Ord (Param d)
 
 -- | Represents a full Yu module.
 data Module d = Module [Decl d]
@@ -135,7 +154,7 @@ deriving instance XForAll Ord d => Ord (Module d)
 -- | Represents a top level declaration in a module.
 data Decl d
   = ModuleDecl (XModuleDecl d) Identifier
-  | FunctionDecl (XFunctionDecl d) Identifier [Param] (Maybe Identifier) [Stmt d]
+  | FunctionDecl (XFunctionDecl d) Identifier [Param d] (Maybe Identifier) [Stmt d]
 
 deriving instance XForAll Show d => Show (Decl d)
 deriving instance XForAll Eq d => Eq (Decl d)
@@ -160,9 +179,15 @@ instance HasSpan (Stmt 'Parse) where
   span (ExprStmt s _)     = s
   span (Return   s _)     = s
 
+-- | Type of literal.
+data LiteralValue
+  = LiteralInt Integer
+  | LiteralBool Bool
+  deriving (Show, Eq, Ord)
+
 -- | Represents expressions yielding values.
 data Expr d
-  = Literal (XLiteral d) Integer
+  = Literal (XLiteral d) LiteralValue
   | VarRef (XVarRef d) Identifier
   | BinOp (XBinOp d) Identifier (Expr d) (Expr d)
   | FuncCall (XFuncCall d) (Expr d) [Expr d]
@@ -183,6 +208,8 @@ instance HasSpan (Expr 'Parse) where
 -- Undecorated --
 -----------------
 
+type instance XParam        'NoDec = ()
+
 type instance XModuleDecl   'NoDec = ()
 type instance XFunctionDecl 'NoDec = ()
 
@@ -199,6 +226,8 @@ type instance XGrouped      'NoDec = ()
 -------------------
 -- Parsing Phase --
 -------------------
+
+type instance XParam        'Parse = Span
 
 type instance XModuleDecl   'Parse = Span
 type instance XFunctionDecl 'Parse = Span
@@ -220,10 +249,12 @@ type instance XGrouped      'Parse = Span
 -- | Fully qualified path of a reference.
 type NamePath = [T.Text]
 
-type instance XModuleDecl   'NameRes = (Span)
-type instance XFunctionDecl 'NameRes = (Span)
+type instance XParam        'NameRes = (Span, NamePath)
 
-type instance XVarDecl      'NameRes = (Span)
+type instance XModuleDecl   'NameRes = (Span)
+type instance XFunctionDecl 'NameRes = (Span, NamePath)
+
+type instance XVarDecl      'NameRes = (Span, NamePath)
 type instance XExprStmt     'NameRes = (Span)
 type instance XReturn       'NameRes = (Span)
 
@@ -232,3 +263,46 @@ type instance XVarRef       'NameRes = (Span, Maybe NamePath)
 type instance XBinOp        'NameRes = (Span)
 type instance XFuncCall     'NameRes = (Span)
 type instance XGrouped      'NameRes = (Span)
+
+-------------------------
+-- Type Checking Phase --
+-------------------------
+
+-- | Data types in the Yu language.
+data YuType
+  = YuVoid
+  | YuInt
+  | YuBool
+  | YuFunc [YuType] YuType
+  | YuUnknownType
+  deriving (Show, Eq, Ord)
+
+type instance XParam        'TypeCheck = (Span, NamePath)
+
+type instance XModuleDecl   'TypeCheck = (Span)
+type instance XFunctionDecl 'TypeCheck = (Span, NamePath)
+
+type instance XVarDecl      'TypeCheck = (Span, NamePath)
+type instance XExprStmt     'TypeCheck = (Span)
+type instance XReturn       'TypeCheck = (Span)
+
+type instance XLiteral      'TypeCheck = (Span, YuType)
+type instance XVarRef       'TypeCheck = (Span, Maybe NamePath, YuType)
+type instance XBinOp        'TypeCheck = (Span, YuType)
+type instance XFuncCall     'TypeCheck = (Span, YuType)
+type instance XGrouped      'TypeCheck = (Span, YuType)
+
+-- | Get type of expression.
+getType :: (Expr 'TypeCheck) -> YuType
+getType (Literal (_, t) _)    = t
+getType (VarRef (_, _, t) _)  = t
+getType (BinOp (_, t) _ _ _)  = t
+getType (FuncCall (_, t) _ _) = t
+getType (Grouped (_, t) _ )   = t
+
+instance HasSpan (Expr 'TypeCheck) where
+  span (Literal (s, _) _)    = s
+  span (VarRef (s, _, _) _)  = s
+  span (BinOp (s, _) _ _ _)  = s
+  span (FuncCall (s, _) _ _) = s
+  span (Grouped (s, _) _ )   = s

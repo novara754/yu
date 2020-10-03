@@ -60,7 +60,11 @@ pFuncDecl = do
   close <- token RBrace
   pure $ FunctionDecl (span def <> span close) name params retty body
   where
-    param = Param <$> pIdent <*> (token Colon >> pIdent)
+    param = do
+      n <- pIdent
+      _ <- token Colon
+      t <- pIdent
+      pure $ Param (span n <> span t) n t
 
 -- | Parser for statements.
 pStmt :: Parser (Stmt 'Parse)
@@ -137,8 +141,13 @@ pExprBase = choice
 -- | Parser for literals.
 pLiteral :: Parser (Expr 'Parse)
 pLiteral = label LabelInt $ do
-  Located s (IntLiteral x) <- satisfy (isInt . lValue)
-  pure $ Literal s x
+  Located s x <- satisfy (isLiteral . lValue)
+  pure . Literal s $ case x of
+    IntLiteral v  -> LiteralInt v
+    BoolLiteral v -> LiteralBool v
+    _             -> error "pLiteral: unhandled literal"
+  where
+    isLiteral x = isInt x || isBool x
 
 -- | Parser for variable reference expressions.
 pVarRef :: Parser (Expr 'Parse)

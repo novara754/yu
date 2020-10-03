@@ -25,11 +25,17 @@ prec :: T.Text -> Int
 prec op = M.findWithDefault minBound op precs
   where
     precs = M.fromList
-      [ ("+", 0)
-      , ("-", 0)
-      , ("*", 1)
-      , ("/", 1)
-      , ("%", 1)
+      [ ("==", 0)
+      , ("!=", 0)
+      , ("<", 1)
+      , (">", 1)
+      , ("<=", 1)
+      , (">=", 1)
+      , ("+", 3)
+      , ("-", 3)
+      , ("*", 4)
+      , ("/", 4)
+      , ("%", 4)
       ]
 
 -- | Apply operator precedences to a declaration.

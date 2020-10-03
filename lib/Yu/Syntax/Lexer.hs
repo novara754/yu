@@ -55,9 +55,12 @@ pToken = choice
 -- | Parser for keywords.
 pKeyword :: Parser (Located Tok)
 pKeyword = located $ do
-  kw <- choice $ map string ["module", "fun", "let", "return"]
+  kw <- choice $ map string ["module", "fun", "let", "return", "true", "false"]
   notFollowedBy $ satisfy isAlphaNum
-  pure $ Keyword kw
+  pure $ case kw of
+    "true"  -> BoolLiteral True
+    "false" -> BoolLiteral False
+    _       -> Keyword kw
 
 -- | Parser for symbols.
 pSymbol :: Parser (Located Tok)

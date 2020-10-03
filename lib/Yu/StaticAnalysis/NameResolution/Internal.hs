@@ -92,11 +92,13 @@ resolveNamesDecl :: Decl 'Parse
 resolveNamesDecl (ModuleDecl s n)         = pure $ ModuleDecl s n
 resolveNamesDecl (FunctionDecl s n p r b) = do
   pushScope $ lValue n
+  path <- reverse . map scopeName <$> get
   addDef False n
   traverse_ (\p' -> addDef True $ paramName p') p
+  let p' = map (\(Param ps pn pt) -> Param (ps, path <> [lValue pn]) pn pt) p
   b' <- traverse resolveNamesStmt b
   popScope
-  pure $ FunctionDecl s n p r b'
+  pure $ FunctionDecl (s, path) n p' r b'
 
 -- | Resolve names in statements.
 resolveNamesStmt :: Stmt 'Parse
@@ -104,8 +106,9 @@ resolveNamesStmt :: Stmt 'Parse
 resolveNamesStmt (ExprStmt s v)    = ExprStmt s <$> resolveNamesExpr v
 resolveNamesStmt (Return s v)      = Return s <$> resolveNamesExpr v
 resolveNamesStmt (VarDecl s n t v) = do
+  path <- (<> [lValue n]) . reverse . map scopeName <$> get
   addDef True n
-  VarDecl s n t <$> resolveNamesExpr v
+  VarDecl (s, path) n t <$> resolveNamesExpr v
 
 -- | Resolve names in expressions.
 resolveNamesExpr :: Expr 'Parse

@@ -35,7 +35,7 @@ parse fp src = do
     Right ts -> evalParser pModule fp (TokStream ts)
 
 -- | Run static analysis.
-staticAnalyze :: Module 'Parse -> Either [SA.StaticAnalysisError] (Module 'NameRes)
+staticAnalyze :: Module 'Parse -> Either [SA.StaticAnalysisError] (Module 'TypeCheck)
 staticAnalyze m =
   let (m', es) = runWriter $ SA.applyAll m
   in case es of
@@ -43,7 +43,7 @@ staticAnalyze m =
     _  -> Left es
 
 -- | Pretty print an AST.
-printAST :: (Module 'NameRes) -> IO ()
+printAST :: (Module 'TypeCheck) -> IO ()
 printAST = pPrint
 
 -- | Pretty print errors that occured during parsing.

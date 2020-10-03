@@ -16,7 +16,8 @@ import           Yu.StaticAnalysis.Types
 import           Yu.Syntax.AST
 import qualified Yu.StaticAnalysis.Precedences as P
 import qualified Yu.StaticAnalysis.NameResolution as NR
+import qualified Yu.StaticAnalysis.TypeCheck as TC
 
 -- | Apply all static analysis operations and transformations.
-applyAll :: Module 'Parse -> Writer [StaticAnalysisError] (Module 'NameRes)
-applyAll = P.applyPrecedences >=> NR.resolveNames
+applyAll :: Module 'Parse -> Writer [StaticAnalysisError] (Module 'TypeCheck)
+applyAll = P.applyPrecedences >=> NR.resolveNames >=> TC.typeCheck

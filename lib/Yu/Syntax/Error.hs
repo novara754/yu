@@ -86,6 +86,7 @@ parseErrorErrata (ParseError _ _ ei) =
             OpIdent x -> "operator `" <> x <> "`"
             Keyword x -> x
             IntLiteral n -> T.pack (show n)
+            BoolLiteral n -> if n then "true" else "false"
             LBrace -> "`{`"
             RBrace -> "`}`"
             LParen -> "`(`"
