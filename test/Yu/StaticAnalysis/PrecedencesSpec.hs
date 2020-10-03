@@ -32,7 +32,7 @@ spec = do
                     eSpan
                     (eLoc "a")
                     (Just $ eLoc "int")
-                    (Literal eSpan 5)
+                    (Literal eSpan (LiteralInt 5))
                 , VarDecl
                     eSpan
                     (eLoc "b")
@@ -49,10 +49,10 @@ spec = do
   describe "applyExpr" $ do
     it "leaves single binary operations alone" $ do
       let asts =
-            [ BinOp eSpan (eLoc "+") (Literal eSpan  5) (Literal eSpan   3)
-            , BinOp eSpan (eLoc "*") (Literal eSpan  1) (Literal eSpan   2)
-            , BinOp eSpan (eLoc "/") (Literal eSpan  2) (Literal eSpan  10)
-            , BinOp eSpan (eLoc "&") (Literal eSpan 98) (Literal eSpan 103)
+            [ BinOp eSpan (eLoc "+") (Literal eSpan (LiteralInt  5)) (Literal eSpan (LiteralInt   3))
+            , BinOp eSpan (eLoc "*") (Literal eSpan (LiteralInt  1)) (Literal eSpan (LiteralInt   2))
+            , BinOp eSpan (eLoc "/") (Literal eSpan (LiteralInt  2)) (Literal eSpan (LiteralInt  10))
+            , BinOp eSpan (eLoc "&") (Literal eSpan (LiteralInt 98)) (Literal eSpan (LiteralInt 103))
             ]
       map applyExpr asts `shouldBe` asts
 
@@ -60,12 +60,12 @@ spec = do
       let ast = BinOp
             eSpan
             (eLoc "*")
-            (Literal eSpan 5)
+            (Literal eSpan (LiteralInt 5))
             (BinOp
               eSpan
               (eLoc "+")
-              (Literal eSpan 7)
-              (Literal eSpan 3)
+              (Literal eSpan (LiteralInt 7))
+              (Literal eSpan (LiteralInt 3))
             )
       let expected = BinOp
             eSpan
@@ -73,26 +73,26 @@ spec = do
             (BinOp
               eSpan
               (eLoc "*")
-              (Literal eSpan 5)
-              (Literal eSpan 7)
+              (Literal eSpan (LiteralInt 5))
+              (Literal eSpan (LiteralInt 7))
             )
-            (Literal eSpan 3)
+            (Literal eSpan (LiteralInt 3))
       applyExpr ast `shouldBe` expected
 
     it "reorders semi complex expressions with multiple binops" $ do
       let ast = BinOp
             eSpan
             (eLoc "/")
-            (Literal eSpan 5)
+            (Literal eSpan (LiteralInt 5))
             (BinOp
               eSpan
               (eLoc "+")
-              (Literal eSpan 5)
+              (Literal eSpan (LiteralInt 5))
               (BinOp
                 eSpan
                 (eLoc "*")
-                (Literal eSpan 10)
-                (Literal eSpan 5)
+                (Literal eSpan (LiteralInt 10))
+                (Literal eSpan (LiteralInt 5))
               )
             )
       let expected = BinOp
@@ -101,14 +101,14 @@ spec = do
             (BinOp
               eSpan
               (eLoc "/")
-                (Literal eSpan 5)
-                (Literal eSpan 5)
+                (Literal eSpan (LiteralInt 5))
+                (Literal eSpan (LiteralInt 5))
               )
             (BinOp
               eSpan
               (eLoc "*")
-              (Literal eSpan 10)
-              (Literal eSpan 5)
+              (Literal eSpan (LiteralInt 10))
+              (Literal eSpan (LiteralInt 5))
             )
       applyExpr ast `shouldBe` expected
 
@@ -116,24 +116,24 @@ spec = do
       let ast = BinOp
             eSpan
             (eLoc "+")
-            (Literal eSpan 1)
+            (Literal eSpan (LiteralInt 1))
             (BinOp
               eSpan
               (eLoc "*")
-              (Literal eSpan 2)
+              (Literal eSpan (LiteralInt 2))
               (BinOp
                 eSpan
                 (eLoc "/")
-                (Literal eSpan 5)
+                (Literal eSpan (LiteralInt 5))
                 (BinOp
                   eSpan
                   (eLoc "+")
-                  (Literal eSpan 5)
+                  (Literal eSpan (LiteralInt 5))
                   (BinOp
                     eSpan
                     (eLoc "*")
-                    (Literal eSpan 10)
-                    (Literal eSpan 5)
+                    (Literal eSpan (LiteralInt 10))
+                    (Literal eSpan (LiteralInt 5))
                   )
                 )
               )
@@ -141,26 +141,26 @@ spec = do
       let expected = BinOp
             eSpan
             (eLoc "+")
-            (Literal eSpan 1)
+            (Literal eSpan (LiteralInt 1))
             (BinOp
               eSpan
               (eLoc "+")
               (BinOp
                 eSpan
                 (eLoc "*")
-                (Literal eSpan 2)
+                (Literal eSpan (LiteralInt 2))
                 (BinOp
                   eSpan
                   (eLoc "/")
-                  (Literal eSpan 5)
-                  (Literal eSpan 5)
+                  (Literal eSpan (LiteralInt 5))
+                  (Literal eSpan (LiteralInt 5))
                 )
               )
               (BinOp
                 eSpan
                 (eLoc "*")
-                (Literal eSpan 10)
-                (Literal eSpan 5)
+                (Literal eSpan (LiteralInt 10))
+                (Literal eSpan (LiteralInt 5))
               )
             )
       applyExpr ast `shouldBe` expected
@@ -169,12 +169,12 @@ spec = do
       let ast = BinOp
             (Span "<test>" (1,1) (1,6))
             (Located (Span "<test>" (1,2) (1,3)) "*")
-            (Literal (Span "<test>" (1,1) (1,2)) 5)
+            (Literal (Span "<test>" (1,1) (1,2)) (LiteralInt 5))
             (BinOp
               (Span "<test>"(1,3) (1,5))
               (Located (Span "<test>" (1,4) (1,5)) "+")
-              (Literal (Span "<test>" (1,3) (1,4)) 7)
-              (Literal (Span "<test>" (1,5) (1,6)) 3)
+              (Literal (Span "<test>" (1,3) (1,4)) (LiteralInt 7))
+              (Literal (Span "<test>" (1,5) (1,6)) (LiteralInt 3))
             )
       let expected = BinOp
             (Span "<test>" (1,1) (1,6))
@@ -182,8 +182,8 @@ spec = do
             (BinOp
               (Span "<test>" (1,1) (1,4))
               (Located (Span "<test>" (1,2) (1,3)) "*")
-              (Literal (Span "<test>" (1,1) (1,2)) 5)
-              (Literal (Span "<test>" (1,3) (1,4)) 7)
+              (Literal (Span "<test>" (1,1) (1,2)) (LiteralInt 5))
+              (Literal (Span "<test>" (1,3) (1,4)) (LiteralInt 7))
             )
-            (Literal (Span "<test>" (1,5) (1,6)) 3)
+            (Literal (Span "<test>" (1,5) (1,6)) (LiteralInt 3))
       applyExpr ast `shouldBe` expected

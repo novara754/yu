@@ -13,12 +13,15 @@ import Yu.Syntax.Error
 class StripDec (n :: Phase -> Type) where
   strip :: n (d :: Phase) -> n 'NoDec
 
+instance StripDec Param where
+  strip (Param _ a b) = Param () a b
+
 instance StripDec Module where
   strip (Module ds) = Module $ map strip ds
 
 instance StripDec Decl where
   strip (ModuleDecl _ n)         = ModuleDecl () n
-  strip (FunctionDecl _ n p r b) = FunctionDecl () n p r $ map strip b
+  strip (FunctionDecl _ n p r b) = FunctionDecl () n (map strip p) r $ map strip b
 
 instance StripDec Stmt where
   strip (VarDecl _ n t v) = VarDecl () n t $ strip v
@@ -78,9 +81,9 @@ spec = do
             , FunctionDecl
                 ()
                 (eLoc "add")
-                [ Param (eLoc "x") (eLoc "int")
-                , Param (eLoc "y") (eLoc "int")
-                , Param (eLoc "z") (eLoc "int")
+                [ Param () (eLoc "x") (eLoc "int")
+                , Param () (eLoc "y") (eLoc "int")
+                , Param () (eLoc "z") (eLoc "int")
                 ]
                 (Just $ eLoc "int")
                 [ Return () $ BinOp
@@ -118,7 +121,7 @@ spec = do
                     ()
                     (eLoc "a")
                     (Just $ eLoc "int")
-                    (Literal () 5)
+                    (Literal () (LiteralInt 5))
                 , VarDecl
                     ()
                     (eLoc "b")
